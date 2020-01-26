@@ -15,9 +15,10 @@ def scrape():
 
     url_news = "https://mars.nasa.gov/news/"
     url_image = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
-    # url_twitter = "https://twitter.com/marswxreport?lang=en"
+    url_twitter = "https://twitter.com/marswxreport?lang=en"
     # url_table = "https://space-facts.com/mars/"
     # url_hems = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
+    
     browser.visit(url_news)
 
     #Create a Delay for load time
@@ -42,20 +43,34 @@ def scrape():
     soup = bs(html, "html.parser")
     
     # Get featured image
-    relative_image_path = soup.find('footer').find('a').text()
-    feature_img = url_news + relative_image_path
+    relative_image_path = soup.find('footer').find('a').attrs['data-fancybox-href']
+    feature_img = "https://www.jpl.nasa.gov" + relative_image_path
 
 
-    # info["headline"] = soup.find("a", class_="result-title").get_text()
-    # info["price"] = soup.find("span", class_="result-price").get_text()
-    # info["hood"] = soup.find("span", class_="result-hood").get_text()
+    # # Visit twitter website
+    flag = False
+    while flag == False:
+        try:
+            url_twitter = "https://twitter.com/marswxreport?lang=en"
+            browser.visit(url_twitter)
+            time.sleep(5)
+            html = browser.html
+            soup = bs(html,'html.parser')
+            weather_tweet = soup.find('div',class_="css-901oao r-hkyrab r-1qd0xha r-a023e6 r-16dba41 r-ad9z0x r-bcqeeo r-bnwqim r-qvutc0").find('span').text.replace('\n', ' ')
+            flag = True
+        except:
+            flag = False
+            print('Wrong twitter version trying again')
+            weather_tweet = soup.find('p',class_='tweet-text').text.replace('\n', ' ')
+
 
 # Store data in a dictionary
     
     mars_info = {
         "news_title": news_title,
         "news_p": news_p,
-        "feature_img": feature_img
+        "feature_img": feature_img,
+        "weather_tweet": weather_tweet
     }
 
     browser.quit()
