@@ -49,10 +49,11 @@ def scrape():
     time.sleep(5)
     html = browser.html
     soup = bs(html, "html.parser")
+    try:
+        weather_tweet = soup.find('div',class_='js-tweet-text-container').find('p').text.replace('\n', ' ')
+    except(AttributeError):
+        weather_tweet = soup.find('div',class_="css-901oao r-hkyrab r-1qd0xha r-a023e6 r-16dba41 r-ad9z0x r-bcqeeo r-bnwqim r-qvutc0").find('span').text.replace('\n', ' ')
     
-    weather_tweet = soup.find('div',class_="css-901oao r-hkyrab r-1qd0xha r-a023e6 r-16dba41 r-ad9z0x r-bcqeeo r-bnwqim r-qvutc0").find('span').text.replace('\n', ' ')
-
-
     # Visit Mars Facts website
     browser.visit(url_table)
     time.sleep(5)
